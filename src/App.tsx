@@ -1,35 +1,38 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { lazy, Suspense } from "react";
+import { BrowserRouter as Router, Routes, Route, Link } from "react-router-dom";
+import {superAppStore}  from "./store";
+import { Provider } from "react-redux";
+// Lazy load Site1 and Site2
+const Site1 = lazy(() => import("../apps/site1/src/App/"));
+const Site2 = lazy(() => import("../apps/site2/src/App"));
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
+    <Provider store={superAppStore}>
+    <Router>
       <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
+        <nav>
+          <ul>
+            <li>
+              <Link to="/site1">Go to Site 1</Link>
+            </li>
+            <li>
+              <Link to="/site2">Go to Site 2</Link>
+            </li>
+          </ul>
+        </nav>
+
+        <Suspense fallback={<h2>Loading...</h2>}>
+          <Routes>
+            <Route path="/site1/*" element={<Site1 />} />
+            <Route path="/site2/*" element={<Site2 />} />
+            <Route path="/" element={<h2>Welcome to Super Site</h2>} />
+          </Routes>
+        </Suspense>
       </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count} Super Site
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    </Router>
+    </Provider>
+  );
 }
 
-export default App
+export default App;
